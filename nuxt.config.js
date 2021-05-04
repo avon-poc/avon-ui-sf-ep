@@ -47,7 +47,18 @@ export default {
       } else {
         return { x: 0, y: 0 };
       }
-    }
+    },extendRoutes (routes, resolve) {
+      routes.push({
+        name: 'Offer',
+        path: '/Offer',
+        component: resolve(__dirname, 'pages/Offer.vue')
+      });
+      routes.push({
+        name: 'OfferDetail',
+        path: '/OfferDetail/:id',
+        component: resolve(__dirname, 'pages/OfferDetails.vue')
+      });
+   }
   },
   buildModules: [
     '@nuxt/typescript-build',
