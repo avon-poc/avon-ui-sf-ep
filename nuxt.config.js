@@ -47,7 +47,14 @@ export default {
       } else {
         return { x: 0, y: 0 };
       }
-    }
+    },
+    extendRoutes (routes, resolve) {
+      routes.push({
+        name: 'cart',
+        path: '/cart',
+        component: resolve(__dirname, 'pages/Cart.vue')
+      })
+   },
   },
   buildModules: [
     '@nuxt/typescript-build',
@@ -133,6 +140,9 @@ export default {
     scss: [require.resolve('@storefront-ui/shared/styles/_helpers.scss', { paths: [process.cwd()] })]
   },
   build: {
+    babel: {
+      plugins: [['@babel/plugin-proposal-private-methods', { loose: true }]],
+    },
     transpile: [
       'vee-validate/dist/rules'
     ],

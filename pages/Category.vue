@@ -1,5 +1,58 @@
 <template>
   <div id="category">
+    <div class="smartphone-only icondiv">
+      <SfIcon
+        v-bind="icon"
+        color="#7f28c4"
+        icon="mail"
+        size="sm"
+        class="iconSize parallelIcon"
+      />
+      <SfImage
+        src="/plp/fb.jpg"
+        alt="Vila stripe maxi shirt dress"
+        :width="35"
+        :height="33"
+        class="parallelIcon"
+      />
+      <SfImage
+        src="/plp/twitter.jpg"
+        alt="Vila stripe maxi shirt dress"
+        :width="29"
+        :height="30"
+        class="parallelIcon"
+      />
+      <SfImage
+        src="/plp/tumblr.jpg"
+        alt="Vila stripe maxi shirt dress"
+        :width="33"
+        :height="33"
+      />
+    </div>
+    <div class="smartphone-only">
+      <SfLink
+        link="https://www.storefrontui.io/"
+        class="sf-product-card__link navTitle"
+      >
+        Previous Page
+        <SfIcon
+          v-bind="icon"
+          icon="chevron_left"
+          class="navIcon"
+          color="#7f28c4"
+          size="sm"
+        />
+      </SfLink>
+    </div>
+    <div class="smartphone-only">
+      <SfImage
+        src="/plp/anew.png"
+        alt="Vila stripe maxi shirt dress"
+        :width="380"
+        :height="175"
+        class="parallelIcon banner_plp"
+      />
+    </div>
     <SfBreadcrumbs
       class="breadcrumbs desktop-only"
       :breadcrumbs="breadcrumbs"
@@ -9,14 +62,14 @@
         <LazyHydrate never>
           <SfHeading
             :level="3"
-            :title="$t('Categories')"
+            :title="$t('Bestsellers Top Rated Whats New')"
             class="navbar__title"
           />
         </LazyHydrate>
       </div>
 
       <div class="navbar__main">
-        <LazyHydrate on-interaction>
+        <!-- <LazyHydrate on-interaction>
           <SfButton
             class="sf-button--text navbar__filters-button"
             data-cy="category-btn_filters"
@@ -30,12 +83,19 @@
               class="navbar__filters-icon"
               data-cy="category-icon_"
             />
-            {{ $t('Filters') }}
+            {{ $t("Filters") }}
           </SfButton>
+        </LazyHydrate> -->
+        <LazyHydrate never class="desktop-only">
+          <SfHeading
+            :level="3"
+            :title="breadcrumbs ? breadcrumbs[breadcrumbs.length - 1].text : ''"
+            class="navbar__title"
+          />
         </LazyHydrate>
 
-        <div class="navbar__sort desktop-only">
-          <span class="navbar__label">{{ $t('Sort by') }}:</span>
+        <div class="navbar__sort sortBy desktop-only">
+          <span class="navbar__label">{{ $t("Sort by") }}:</span>
           <LazyHydrate on-interaction>
             <SfSelect
               :value="sortBy.selected"
@@ -55,18 +115,18 @@
           </LazyHydrate>
         </div>
 
-        <div class="navbar__counter">
+        <!-- <div class="navbar__counter">
           <span class="navbar__label desktop-only"
-            >{{ $t('Products found') }}:
+            >{{ $t("Products found") }}:
           </span>
           <span class="desktop-only">{{ pagination.totalItems }}</span>
           <span class="navbar__label smartphone-only"
-            >{{ pagination.totalItems }} {{ $t('Items') }}</span
+            >{{ pagination.totalItems }} {{ $t("Items") }}</span
           >
-        </div>
+        </div> -->
 
-        <div class="navbar__view">
-          <span class="navbar__view-label desktop-only">{{ $t('View') }}</span>
+        <div class="navbar__view desktop-only">
+          <span class="navbar__view-label desktop-only">{{ $t("View") }}</span>
           <SfIcon
             data-cy="category-icon_grid-view"
             class="navbar__view-icon"
@@ -158,13 +218,13 @@
       <SfLoader :class="{ loading }" :loading="loading">
         <div class="products" v-if="!loading">
           <transition-group
-            v-if="isCategoryGridView"
+            v-if="!isCategoryGridView"
             appear
             name="products__slide"
             tag="div"
             class="products__grid"
           >
-            <SfProductCard
+            <ProductCard
               data-cy="category-product-card"
               v-for="(product, i) in products"
               :key="productGetters.getSlug(product)"
@@ -176,18 +236,19 @@
               "
               :special-price="
                 productGetters.getPrice(product).special &&
-                  $n(productGetters.getPrice(product).special, 'currency')
+                $n(productGetters.getPrice(product).special, 'currency')
               "
               :max-rating="5"
               :score-rating="productGetters.getAverageRating(product)"
               :show-add-to-cart-button="true"
               :isOnWishlist="false"
               :isAddedToCart="isInCart({ product })"
+              :variant="getVariant(product)"
               :link="
                 localePath(
                   `/p/${productGetters.getId(product)}/${productGetters.getSlug(
-                    product,
-                  )}`,
+                    product
+                  )}`
                 )
               "
               class="products__product-card"
@@ -202,7 +263,7 @@
             tag="div"
             class="products__list"
           >
-            <SfProductCardHorizontal
+            <ProductCardHorizontal
               data-cy="category-product-cart_wishlist"
               v-for="(product, i) in products"
               :key="productGetters.getSlug(product)"
@@ -215,19 +276,20 @@
               "
               :special-price="
                 productGetters.getPrice(product).special &&
-                  $n(productGetters.getPrice(product).special, 'currency')
+                $n(productGetters.getPrice(product).special, 'currency')
               "
               :max-rating="5"
               :score-rating="3"
               :is-on-wishlist="false"
+              :variant="getVariant(product)"
               class="products__product-card-horizontal"
               @click:wishlist="addItemToWishlist({ product })"
               @click:add-to-cart="addItemToCart({ product, quantity: 1 })"
               :link="
                 localePath(
                   `/p/${productGetters.getId(product)}/${productGetters.getSlug(
-                    product,
-                  )}`,
+                    product
+                  )}`
                 )
               "
             >
@@ -236,20 +298,20 @@
                   class="desktop-only"
                   name="Size"
                   value="XS"
-                  style="margin: 0 0 1rem 0;"
+                  style="margin: 0 0 1rem 0"
                 />
                 <SfProperty class="desktop-only" name="Color" value="white" />
               </template>
               <template #actions>
                 <SfButton
                   class="sf-button--text desktop-only"
-                  style="margin: 0 0 1rem auto; display: block;"
+                  style="margin: 0 0 1rem auto; display: block"
                   @click="() => {}"
                 >
-                  {{ $t('Save for later') }}
+                  {{ $t("Save for later") }}
                 </SfButton>
               </template>
-            </SfProductCardHorizontal>
+            </ProductCardHorizontal>
           </transition-group>
 
           <LazyHydrate on-interaction>
@@ -269,7 +331,7 @@
             class="products__show-on-page"
           >
             <span class="products__show-on-page__label">{{
-              $t('Show on page')
+              $t("Show on page")
             }}</span>
             <LazyHydrate on-interaction>
               <SfSelect
@@ -358,12 +420,12 @@
         <template #content-bottom>
           <div class="filters__buttons">
             <SfButton class="sf-button--full-width" @click="applyFilters">{{
-              $t('Done')
+              $t("Done")
             }}</SfButton>
             <SfButton
               class="sf-button--full-width filters__button-clear"
               @click="clearFilters"
-              >{{ $t('Clear all') }}</SfButton
+              >{{ $t("Clear all") }}</SfButton
             >
           </div>
         </template>
@@ -390,109 +452,106 @@ import {
   SfLoader,
   SfColor,
   SfProperty,
-} from '@storefront-ui/vue'
-import { ref, computed, onMounted } from '@vue/composition-api'
+  SfImage,
+} from "@storefront-ui/vue";
+import { ref, computed, onMounted } from "@vue/composition-api";
 import {
   useCart,
   useWishlist,
   productGetters,
   useFacet,
   facetGetters,
-} from '@vsf-enterprise/commercetools'
-import { useUiHelpers, useUiState } from '~/composables'
-import { onSSR } from '@vue-storefront/core'
-import LazyHydrate from 'vue-lazy-hydration'
-import Vue from 'vue'
-
+} from "@vsf-enterprise/commercetools";
+import { useUiHelpers, useUiState } from "~/composables";
+import { onSSR } from "@vue-storefront/core";
+import LazyHydrate from "vue-lazy-hydration";
+import Vue from "vue";
+import ProductCard from "../components/ProductCard";
+import ProductCardHorizontal from "../components/ProductCardHorizontal";
+import BottomRepBlock from "../components/BottomRepBlock";
 // TODO(addToCart qty, horizontal): https://github.com/vuestorefront/storefront-ui/issues/1606
 export default {
-  transition: 'fade',
+  transition: "fade",
   setup(props, context) {
-    const th = useUiHelpers()
-    const uiState = useUiState()
-    const { addItem: addItemToCart, isInCart } = useCart()
-    const { addItem: addItemToWishlist } = useWishlist()
-    const { result, search, loading } = useFacet()
-
-    const products = computed(() => facetGetters.getProducts(result.value))
+    const th = useUiHelpers();
+    const uiState = useUiState();
+    const { addItem: addItemToCart, isInCart } = useCart();
+    const { addItem: addItemToWishlist } = useWishlist();
+    const { result, search, loading } = useFacet();
+    const products = computed(() => facetGetters.getProducts(result.value));
     const categoryTree = computed(() =>
-      facetGetters.getCategoryTree(result.value),
-    )
+      facetGetters.getCategoryTree(result.value)
+    );
     const breadcrumbs = computed(() =>
-      facetGetters.getBreadcrumbs(result.value),
-    )
-    const sortBy = computed(() => facetGetters.getSortOptions(result.value))
+      facetGetters.getBreadcrumbs(result.value)
+    );
+    const sortBy = computed(() => facetGetters.getSortOptions(result.value));
     const facets = computed(() =>
-      facetGetters.getGrouped(result.value, ['color', 'size']),
-    )
-    const pagination = computed(() => facetGetters.getPagination(result.value))
+      facetGetters.getGrouped(result.value, ["color", "size"])
+    );
+    const pagination = computed(() => facetGetters.getPagination(result.value));
     const activeCategory = computed(() => {
-      const items = categoryTree.value.items
-
+      const items = categoryTree.value.items;
       if (categoryTree.value.isCurrent) {
-        return categoryTree.value.label
+        return categoryTree.value.label;
       }
-
       if (!items) {
-        return ''
+        return "";
       }
-
       const category = items.find(
         ({ isCurrent, items }) =>
-          isCurrent || items.find(({ isCurrent }) => isCurrent),
-      )
-
-      return category?.label || items[0]?.label || ''
-    })
-
+          isCurrent || items.find(({ isCurrent }) => isCurrent)
+      );
+      return category?.label || items[0]?.label || "";
+    });
     onSSR(async () => {
-      await search(th.getFacetsFromURL())
-    })
-
-    const { changeFilters, isFacetColor } = useUiHelpers()
-    const { toggleFilterSidebar } = useUiState()
-    const selectedFilters = ref({})
-
+      await search(th.getFacetsFromURL());
+    });
+    const { changeFilters, isFacetColor } = useUiHelpers();
+    const { toggleFilterSidebar } = useUiState();
+    const selectedFilters = ref({});
     onMounted(() => {
-      context.root.$scrollTo(context.root.$el, 2000)
-      if (!facets.value.length) return
+      context.root.$scrollTo(context.root.$el, 2000);
+      if (!facets.value.length) return;
       selectedFilters.value = facets.value.reduce(
         (prev, curr) => ({
           ...prev,
           [curr.id]: curr.options.filter((o) => o.selected).map((o) => o.id),
         }),
-        {},
-      )
-    })
-
+        {}
+      );
+    });
     const isFilterSelected = (facet, option) =>
-      (selectedFilters.value[facet.id] || []).includes(option.id)
-
+      (selectedFilters.value[facet.id] || []).includes(option.id);
     const selectFilter = (facet, option) => {
       if (!selectedFilters.value[facet.id]) {
-        Vue.set(selectedFilters.value, facet.id, [])
+        Vue.set(selectedFilters.value, facet.id, []);
       }
-
       if (selectedFilters.value[facet.id].find((f) => f === option.id)) {
         selectedFilters.value[facet.id] = selectedFilters.value[
           facet.id
-        ].filter((f) => f !== option.id)
-        return
+        ].filter((f) => f !== option.id);
+        return;
       }
-
-      selectedFilters.value[facet.id].push(option.id)
-    }
-
+      selectedFilters.value[facet.id].push(option.id);
+    };
     const clearFilters = () => {
-      toggleFilterSidebar()
-      selectedFilters.value = {}
-      changeFilters(selectedFilters.value)
-    }
-
+      toggleFilterSidebar();
+      selectedFilters.value = {};
+      changeFilters(selectedFilters.value);
+    };
     const applyFilters = () => {
-      toggleFilterSidebar()
-      changeFilters(selectedFilters.value)
-    }
+      toggleFilterSidebar();
+      changeFilters(selectedFilters.value);
+    };
+    const getVariant = (product) => {
+      //  console.log("product123>>>>>>>>", product);
+      var variant = product.attributes.find((obj) => {
+        return obj.name === "variantType";
+      });
+      // console.log("product>>>>>>>>", product, variant ? variant.value : "");
+      return variant ? variant.value : "";
+    };
 
     return {
       ...uiState,
@@ -515,7 +574,8 @@ export default {
       selectedFilters,
       clearFilters,
       applyFilters,
-    }
+      getVariant,
+    };
   },
   components: {
     SfButton,
@@ -535,17 +595,44 @@ export default {
     SfHeading,
     SfProperty,
     LazyHydrate,
+    ProductCard,
+    ProductCardHorizontal,
+    SfImage,
+    BottomRepBlock,
   },
-}
+};
 </script>
-
 <style lang="scss" scoped>
+.divider {
+  border-top: 1px dotted black;
+}
+
+.sortBy {
+  border: 1px solid black;
+  padding: 5px;
+  padding-left: 1rem;
+  border-radius: 5px;
+  margin-top: 0px !important;
+  margin-left: 35px !important;
+}
+.categoryHeader {
+  font-weight: bold;
+  color: #181818;
+  text-transform: uppercase;
+  line-height: 2.4rem;
+  font-family: Montserrat, Arial;
+  font-size: 1.4rem;
+}
 #category {
   box-sizing: border-box;
   @include for-desktop {
     max-width: 1240px;
     margin: 0 auto;
   }
+}
+
+.navbar__main {
+  justify-content: flex-start !important;
 }
 .main {
   &.section {
@@ -643,9 +730,13 @@ export default {
     --select-option-font-size: var(--font-size-sm);
     --select-error-message-height: 0;
     ::v-deep .sf-select__dropdown {
-      font-size: var(--font-size-sm);
-      font-family: var(--font-family--secondary);
+      @include for-mobile {
+        width: 280px;
+      }
+      background: var(--c-background-two);
+      font-family: var(--font-family);
       font-weight: var(--font-weight--light);
+      font-size: 16px;
       margin: 0;
     }
     ::v-deep .sf-select__placeholder {
@@ -655,7 +746,9 @@ export default {
   &__sort {
     display: flex;
     align-items: center;
-    margin: 0 auto 0 var(--spacer-2xl);
+    @include for-mobile {
+      margin: 0 auto 0 var(--spacer-2xl);
+    }
   }
   &__counter {
     font-family: var(--font-family--secondary);
@@ -703,7 +796,6 @@ export default {
   border-width: 0 1px 0 0;
 }
 .sidebar-filters {
-  --overlay-z-index: 3;
   --sidebar-title-display: none;
   --sidebar-top-padding: 0;
   @include for-desktop {
@@ -728,7 +820,7 @@ export default {
   flex: 1;
   margin: 0;
   &__grid {
-    justify-content: center;
+    justify-content: space-between;
     @include for-desktop {
       justify-content: flex-start;
     }
@@ -751,12 +843,6 @@ export default {
   }
   &__product-card-horizontal {
     flex: 0 0 100%;
-    @include for-mobile {
-      ::v-deep .sf-image {
-        --image-width: 5.3125rem;
-        --image-height: 7.0625rem;
-      }
-    }
   }
   &__slide-enter {
     opacity: 0;
@@ -799,11 +885,6 @@ export default {
   margin: var(--spacer-3xl) auto;
   @include for-desktop {
     margin-top: 6.25rem;
-  }
-  &--categories {
-    @include for-desktop {
-      margin-top: 3.75rem;
-    }
   }
 }
 ::v-deep .sf-sidebar__aside {
@@ -865,5 +946,74 @@ export default {
     --button-color: var(--c-dark-variant);
     margin: var(--spacer-xs) 0 0 0;
   }
+}
+
+.dividerColor {
+  border-bottom-style: solid;
+  border-bottom-color: grey;
+}
+
+.iconSize {
+  width: 35px;
+  height: 33px;
+}
+.parallelIcon {
+  float: left;
+}
+.icondiv {
+  margin-top: 10px;
+  margin-left: 10px;
+}
+.navTitle {
+  margin: 10px;
+  margin-bottom: 0px;
+  padding: 18px;
+  background: whitesmoke;
+  width: 350px;
+}
+.navIcon {
+  float: right;
+  margin-bottom: 10px;
+  margin-top: -12px;
+  margin-right: -26px;
+}
+.navbar__sort {
+  @include for-mobile {
+    width: 90%;
+    margin-left: 0 !important;
+  }
+  // margin-left: 400px !important;
+  border: 1px solid #cccccc;
+  background: var(--c-background-two);
+}
+
+/* Common */
+.atbbtnPDP {
+  font-size: 10pt;
+  font-weight: bold;
+  background-color: #7f28c4;
+  color: white;
+  height: 40px !important;
+  border-radius: 5px;
+  margin: 0px;
+  font-family: var(--font-family);
+}
+.subscribePDP {
+  color: #7f28c4;
+  text-align: center;
+  align-items: center;
+  line-height: 2rem;
+  font-family: Montserrat, Arial;
+}
+.repButton {
+  margin: 10px auto;
+  width: 380px;
+}
+.navbar__label {
+  font-family: var(--font-family);
+  font-size: 16px;
+}
+.banner_plp {
+  margin: 20px 20px 10px 15px;
 }
 </style>
