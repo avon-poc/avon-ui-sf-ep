@@ -36,7 +36,11 @@ export default {
         once: true
       }
     ],
-    script: []
+    script: [{
+      type: "text/javascript",
+      src: "https://cdn.esales.apptus.com/api/apptus-esales-api-2.2.2.js"
+    }
+    ]
   },
   loading: { color: '#fff' },
   router: {
@@ -82,7 +86,7 @@ export default {
     'vue-scrollto/nuxt',
     '@vue-storefront/middleware/nuxt'
   ],
-  plugins: ['~/plugins/cms.client', '~/plugins/mgnl-vue-editor.js'],
+  plugins: ['~/plugins/cms.client', '~/plugins/mgnl-vue-editor.js', '~/plugins/global.client.js'],
   serverMiddleware: ['~/plugins/cms.server'],
   i18n: {
     currency: 'GBP',
@@ -133,6 +137,9 @@ export default {
     scss: [require.resolve('@storefront-ui/shared/styles/_helpers.scss', { paths: [process.cwd()] })]
   },
   build: {
+    babel: {
+      plugins: [['@babel/plugin-proposal-private-methods', { loose: true }]],
+    },
     transpile: [
       'vee-validate/dist/rules'
     ],
