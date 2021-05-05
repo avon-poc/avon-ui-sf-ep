@@ -481,7 +481,7 @@ export default {
 
     onMounted(() => {
       const getApptusAPI = context.root.$apptusAPI;
-      var apiApptus = getApptusAPI
+      var apiApptus = getApptusAPI();
 
       // Adding Sorting
       let sortByQuery =
@@ -515,7 +515,6 @@ export default {
       apiApptus
         .panel("/search-page/search-result-zone", filterObj)
         .then(function (data) {
-          console.log('sucess',data);
           productCount.value = data.response.productCount[0].count;
           products.value = [...data.response.hits[0].products];
           facets.value = [...data.response.hits[1].facetList];
