@@ -36,7 +36,11 @@ export default {
         once: true
       }
     ],
-    script: []
+    script: [{
+      type: "text/javascript",
+      src: "https://cdn.esales.apptus.com/api/apptus-esales-api-2.2.2.js"
+    }
+    ]
   },
   loading: { color: '#fff' },
   router: {
@@ -53,7 +57,12 @@ export default {
         name: 'cart',
         path: '/cart',
         component: resolve(__dirname, 'pages/Cart.vue')
-      })
+      }),
+      routes.push({
+        name: 'category',
+        path: '/category',
+        component: resolve(__dirname, 'pages/Category_1.vue')
+      });
    },
   },
   buildModules: [
