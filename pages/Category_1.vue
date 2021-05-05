@@ -225,10 +225,10 @@
               v-for="(product, i) in products"
               :key="productGetters.getSlug(product)"
               :style="{ '--index': i }"
-              :title="productGetters.getName(product)"
-              :image="productGetters.getCoverImage(product)"
+              :title="product.attributes.title[0]"
+              :image="product.attributes.image_url[0]"
               :regular-price="
-                $n(productGetters.getPrice(product).regular, 'currency')
+                $n(product.attributes.price[0], 'currency')
               "
               :special-price="
                 productGetters.getPrice(product).special &&

@@ -253,7 +253,7 @@
               "
               class="products__product-card"
               @click:wishlist="addItemToWishlist({ product })"
-              @click:add-to-cart="addItemToCart({ product, quantity: 1 })"
+              @click:add-to-cart="addToCart({ product, quantity: 1 })"
             />
           </transition-group>
           <transition-group
@@ -284,7 +284,7 @@
               :variant="getVariant(product)"
               class="products__product-card-horizontal"
               @click:wishlist="addItemToWishlist({ product })"
-              @click:add-to-cart="addItemToCart({ product, quantity: 1 })"
+              @click:add-to-cart="addToCart({ product, quantity: 1 })"
               :link="
                 localePath(
                   `/p/${productGetters.getId(product)}/${productGetters.getSlug(
@@ -475,13 +475,16 @@ export default {
   setup(props, context) {
     const th = useUiHelpers();
     const uiState = useUiState();
+    const getApptusAPI = context.root.$apptusAPI;
     const { addItem: addItemToCart, isInCart } = useCart();
     const { addItem: addItemToWishlist } = useWishlist();
     const { result, search, loading } = useFacet();
     const products = computed(() => facetGetters.getProducts(result.value));
+    const esaleProducts= ref();
     const categoryTree = computed(() =>
       facetGetters.getCategoryTree(result.value)
     );
+    console.log("categoryTree>>>>>>>>", categoryTree, result.value,products.value);
     const breadcrumbs = computed(() =>
       facetGetters.getBreadcrumbs(result.value)
     );
@@ -511,6 +514,26 @@ export default {
     const { toggleFilterSidebar } = useUiState();
     const selectedFilters = ref({});
     onMounted(() => {
+      var apiApptus = getApptusAPI();
+       apiApptus
+        .panel("/product-list-page", {
+          window_first: 1,
+          window_last: 10,
+          product_key: "1137_UK",
+          category_tree: "section_UK",
+          sort_by: "price asc",
+        })
+        .then(function (data) {
+          console.log("response from category1", data.response);
+          // productCount.value = data.response.productListWithCount[0].count;
+          esaleProducts.value = [...data.response.productListWithCount[1].products];
+          // facets.value = [...data.response.facets];
+          console.log("response from category", esaleProducts.value);
+          // didYouMean.value = [...data.response.hits[2].corrections];
+        })
+        .catch(function (data) {
+          console.log("Error: ", data);
+        });
       context.root.$scrollTo(context.root.$el, 2000);
       if (!facets.value.length) return;
       selectedFilters.value = facets.value.reduce(
@@ -552,6 +575,24 @@ export default {
       // console.log("product>>>>>>>>", product, variant ? variant.value : "");
       return variant ? variant.value : "";
     };
+    const getTicketId = (productkey) => {
+     let product= esaleProducts.value.find((obj)=>{
+        return obj.key===productkey;
+      })
+      return product.key;
+    };
+
+    const addToCart = (obj) => {
+      // let api = window.esalesAPI({
+      //   market: "UK",
+      //   clusterId: "wFE4AE5CF",
+      // });
+      //-- productkey have to get from CT
+      // let ticketId=getTicketId(productkey);
+      // api.notify.addToCart(ticketId);
+      console.log("obj product123>>>>>>>>", obj);
+      addItemToCart(obj);
+    };
 
     return {
       ...uiState,
@@ -575,6 +616,7 @@ export default {
       clearFilters,
       applyFilters,
       getVariant,
+      addToCart
     };
   },
   components: {
