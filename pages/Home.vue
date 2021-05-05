@@ -15,7 +15,7 @@
       </SfHero>
     </LazyHydrate>
     <h3>Data from Magnolia</h3>
-    <EditableArea :content="main" />
+    <!-- <EditableArea :content="main" /> -->
     <LazyHydrate when-visible>
       <SfBannerGrid :banner-grid="1" class="banner-grid">
         <template v-for="item in banners" v-slot:[item.slot]>

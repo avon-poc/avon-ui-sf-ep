@@ -98,7 +98,7 @@ export default {
     'vue-scrollto/nuxt',
     '@vue-storefront/middleware/nuxt'
   ],
-  plugins: ['~/plugins/cms.client', '~/plugins/mgnl-vue-editor.js'],
+  plugins: ['~/plugins/cms.client', '~/plugins/mgnl-vue-editor.js', '~/plugins/global.client.js'],
   serverMiddleware: ['~/plugins/cms.server'],
   i18n: {
     currency: 'GBP',
