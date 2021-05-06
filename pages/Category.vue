@@ -100,32 +100,22 @@
             :class="{ 'loading--categories': loading }"
             :loading="loading"
           >
-            <SfAccordion :open="activeCategory" :show-chevron="true">
+            <SfAccordion :open="activeCategory" :show-chevron="false">
               <SfAccordionItem
                 v-for="(cat, i) in categoryTree && categoryTree.items"
                 :key="i"
-                :header="cat.label"
+                :header="cat.label" 
               >
-                <template>
-                  <SfList class="list">
-                    <SfListItem class="list__item">
-                      <SfMenuItem
-                        :count="cat.count || ''"
-                        :data-cy="`category-link_subcategory_${cat.slug}`"
-                        :label="cat.label"
-                      >
-                        <template #label>
-                          <nuxt-link
-                            :to="localePath(th.getCatLink(cat))"
-                            :class="
-                              cat.isCurrent ? 'sidebar--cat-selected' : ''
-                            "
-                          >
-                            All
-                          </nuxt-link>
-                        </template>
-                      </SfMenuItem>
-                    </SfListItem>
+                <template v-slot:header v-if="cat.items.length === 0">
+                  <SfButton
+                      class="sf-button--pure sf-accordion-item__header hideNextDiv"
+                    :link="localePath(th.getCatLink(cat))"
+                    >
+                    {{ cat.label }}
+                    </SfButton>              
+                </template>       
+                <template>                 
+                  <SfList class="list" v-if="cat.items.length > 0">
                     <SfListItem
                       class="list__item"
                       v-for="(subCat, j) in cat.items"
