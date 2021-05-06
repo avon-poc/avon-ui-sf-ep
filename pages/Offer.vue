@@ -26,16 +26,21 @@ import { ref, computed, onMounted } from "@vue/composition-api";
 import { onSSR } from "@vue-storefront/core";
 import useCustomAPI from "../composables/useCustomAPI";
 import { SfButton } from "@storefront-ui/vue";
+import Vue from 'vue';
+
 
 export default {
   setup(props, { root }) {
     const { offer, getOffers } = useCustomAPI();
     const offerData = computed(() => offer.value);
     onMounted(async () => {
+//     console.log("myGlobalVar eslaes", this&& this.$myPlugin.foo);
+     this && this.$hello('mounted')
+
       await getOffers();
     });
     const onSelect = (item) => {
-      root.$router.push("/OfferDetail/" + item);
+      root.$router.push("/special-offers/" + item);
     };
     return { offerData, onSelect };
   },

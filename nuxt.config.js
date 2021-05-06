@@ -36,7 +36,10 @@ export default {
         once: true
       }
     ],
-    script: []
+    script: [{
+      type: "text/javascript",
+      src: "https://cdn.esales.apptus.com/api/apptus-esales-api-2.2.2.js"
+    }]
   },
   loading: { color: '#fff' },
   router: {
@@ -49,13 +52,13 @@ export default {
       }
     },extendRoutes (routes, resolve) {
       routes.push({
-        name: 'Offer',
-        path: '/Offer',
+        name: 'specialOffers',
+        path: '/special-offers',
         component: resolve(__dirname, 'pages/Offer.vue')
       });
       routes.push({
-        name: 'OfferDetail',
-        path: '/OfferDetail/:id',
+        name: 'specialOffersDetail',
+        path: '/special-offers/:id',
         component: resolve(__dirname, 'pages/OfferDetails.vue')
       });
    }

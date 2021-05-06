@@ -42,21 +42,16 @@
         <div><hr class="sf-divider divider" /></div>
       </div>
       <div class="products">
-        <p
-          v-if="
-            getListProducts &&
-            getListProducts.value &&
-            Object.keys(getListProducts.value).length > 0
-          "
-        >
-          Buy List
-        </p>
-        <transition-group
-          appear
-          name="products__slide"
-          tag="div"
-          class="products__grid"
-        >
+        <div class="products__buyListPdts">
+          <p class="header_type"
+            v-if="
+              getListProducts &&
+              getListProducts.value &&
+              Object.keys(getListProducts.value).length > 0
+            "
+          >
+            Buy List
+          </p>
           <ProductCard
             data-cy="category-product-card"
             v-for="(product, i) in buyListProducts.value"
@@ -81,22 +76,18 @@
             @click:add-to-cart="addItemToCart1(product, qty)"
           >
           </ProductCard>
-        </transition-group>
-        <p
-          v-if="
-            getListProducts &&
-            getListProducts.value &&
-            Object.keys(getListProducts.value).length > 0
-          "
-        >
-          Get List
-        </p>
-        <transition-group
-          appear
-          name="products__slide"
-          tag="div"
-          class="products__grid"
-        >
+        </div>
+        <div class="products__getListPdts">
+          <p class="header_type"
+            v-if="
+              getListProducts &&
+              getListProducts.value &&
+              Object.keys(getListProducts.value).length > 0
+            "
+          >
+            Get List
+          </p>
+        
           <ProductCard
             data-cy="category-product-card"
             v-for="(product, i) in getListProducts.value"
@@ -120,45 +111,10 @@
             class="products__product-card"
           >
           </ProductCard>
-        </transition-group>
-
-        <div class="common-rep-block">
-          <SfHeading
-            class="heading-offer"
-            :title="$t('Get Exclusive Special Offers & The Latest News')"
-          />
-          <SfLink class="sf-product-card__link subscribePDP"
-            >SUBSCRIBE / SIGN UP >
-          </SfLink>
-          <div class="smartphone-only">
-            <SfButton
-              class="sf-add-to-cart__button atbbtnPDP repButton"
-              @click="
-                addItem({
-                  product,
-                  quantity: parseInt(qty),
-                  repId: 'rep01',
-                })
-              "
-            >
-              Find a Representative
-            </SfButton>
-            <SfButton
-              class="sf-add-to-cart__button atbbtnPDP repButton"
-              @click="
-                addItem({
-                  product,
-                  quantity: parseInt(qty),
-                  repId: 'rep01',
-                })
-              "
-            >
-              Become a Representative
-            </SfButton>
-          </div>
         </div>
+        
       </div>
-    </div>
+     </div>
   </div>
 </template>
 <script>
@@ -544,44 +500,19 @@ export default {
       --product-card-title-margin: var(--spacer-sm) 0 0 0;
     }
   }
-  &__product-card-horizontal {
-    flex: 0 0 100%;
+  display : flex;
+  &__buyListPdts{
+    width: 50%
   }
-  &__slide-enter {
-    opacity: 0;
-    transform: scale(0.5);
+  &__getListPdts{
+    width: 50%
   }
-  &__slide-enter-active {
-    transition: all 0.2s ease;
-    transition-delay: calc(0.1s * var(--index));
-  }
-  @include for-desktop {
-    &__grid {
-      margin: var(--spacer-sm) 0 0 var(--spacer-sm);
-    }
-    &__pagination {
-      display: flex;
-      justify-content: flex-start;
-      margin: var(--spacer-xl) 0 0 0;
-    }
-    &__product-card-horizontal {
-      margin: var(--spacer-lg) 0;
-    }
-    &__product-card {
-      flex: 1 1 25%;
-    }
-    &__list {
-      margin: 0 0 0 var(--spacer-sm);
-    }
-  }
-  &__show-on-page {
-    display: flex;
-    justify-content: flex-end;
-    align-items: baseline;
-    &__label {
-      font-family: var(--font-family--secondary);
-      font-size: var(--font-size--sm);
-    }
+  .header_type{
+    font-size: 30px;
+    text-align: center;
+    border: 1px solid;
+    padding: 5px 0px;
+    margin: 5px;
   }
 }
 .loading {
