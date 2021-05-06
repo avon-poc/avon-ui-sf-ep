@@ -83,13 +83,9 @@
       />
     </LazyHydrate>
 
-    <LazyHydrate when-visible>
-      <InstagramFeed />
-    </LazyHydrate>
-
-    <LazyHydrate when-visible>
-      <MobileStoreBanner/>
-    </LazyHydrate>
+    <div class="desktop-only" v-if="recomApptusData && recomApptusData.length > 0">
+    <RecommendedProductCard :recomData='recomApptusData'/>
+  </div>
   </div>
 </template>
 <script>
@@ -109,10 +105,38 @@ import {
 import InstagramFeed from '~/components/InstagramFeed.vue';
 import MobileStoreBanner from '~/components/MobileStoreBanner.vue';
 import LazyHydrate from 'vue-lazy-hydration';
+import { ref, onMounted } from "@vue/composition-api";
+import RecommendedProductCard from "../components/RecommendedProductCard";
+
 
 export default {
   name: 'Home',
   props: [ 'title', 'main', 'content'],
+  setup(props, context) {
+    const recomApptusData = ref("");
+    onMounted(() => {
+      const getApptusAPI = context.root.$apptusAPI;
+      var apiApptus = getApptusAPI();
+      console.log("apiApptu", apiApptus);
+      apiApptus.panel('/homepage', {
+          window_first: 1,
+          window_last: 5,
+          product_key:'1137_UK',
+          filter:'market:\'UK\''
+        }).then(function(data) {
+            console.log("apptus",data);
+            recomApptusData.value = data && data.response && data.response.recommendBasedOnCustomer 
+              && data.response.recommendBasedOnCustomer[0]
+              && data.response.recommendBasedOnCustomer[0].products;
+            console.log("recomApptusData.value", recomApptusData.value);
+        }).catch(function(data) {
+            console.log('Error: ', data);
+        });
+    });
+     return {
+       recomApptusData
+     };
+  },
   components: {
     InstagramFeed,
     SfHero,
@@ -127,7 +151,8 @@ export default {
     SfArrow,
     SfButton,
     MobileStoreBanner,
-    LazyHydrate
+    LazyHydrate,
+    RecommendedProductCard
   },
   data() {
     return {
