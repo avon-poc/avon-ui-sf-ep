@@ -86,6 +86,24 @@
             {{ $t("Filters") }}
           </SfButton>
         </LazyHydrate> -->
+
+        <!-- <LazyHydrate on-interaction>
+          <SfButton
+            class="sf-button--text navbar__filters-button"
+            data-cy="category-btn_filters"
+            aria-label="Filters"
+            @click="toggleFilterSidebar"
+          >
+            <SfIcon
+              size="24px"
+              color="dark-secondary"
+              icon="filter2"
+              class="navbar__filters-icon"
+              data-cy="category-icon_"
+            />
+            {{ $t("Filters") }}
+          </SfButton>
+        </LazyHydrate> -->
         <LazyHydrate never class="desktop-only">
           <SfHeading
             :level="3"
@@ -475,23 +493,31 @@ export default {
   setup(props, context) {
     const th = useUiHelpers();
     const uiState = useUiState();
-    const getApptusAPI = context.root.$apptusAPI;
+    // const getApptusAPI = context.root.$apptusAPI;
+    // var apiApptus = getApptusAPI();
     const { addItem: addItemToCart, isInCart } = useCart();
     const { addItem: addItemToWishlist } = useWishlist();
     const { result, search, loading } = useFacet();
     const products = computed(() => facetGetters.getProducts(result.value));
-    const esaleProducts= ref();
+    const esaleProducts = ref();
+    const efacets = ref();
+    const facets = ref([]);
     const categoryTree = computed(() =>
       facetGetters.getCategoryTree(result.value)
     );
-    console.log("categoryTree>>>>>>>>", categoryTree, result.value,products.value);
+    console.log(
+      "categoryTree>>>>>>>>",
+      categoryTree,
+      result.value,
+      products.value
+    );
     const breadcrumbs = computed(() =>
       facetGetters.getBreadcrumbs(result.value)
     );
     const sortBy = computed(() => facetGetters.getSortOptions(result.value));
-    const facets = computed(() =>
-      facetGetters.getGrouped(result.value, ["color", "size"])
-    );
+    // const facets = computed(() =>
+    //   facetGetters.getGrouped(result.value, ["color", "size"])
+    // );
     const pagination = computed(() => facetGetters.getPagination(result.value));
     const activeCategory = computed(() => {
       const items = categoryTree.value.items;
@@ -514,8 +540,11 @@ export default {
     const { toggleFilterSidebar } = useUiState();
     const selectedFilters = ref({});
     onMounted(() => {
-      var apiApptus = getApptusAPI();
-       apiApptus
+      var apiApptus = window.esalesAPI({
+        market: "UK",
+        clusterId: "wFE4AE5CF",
+      });
+      apiApptus
         .panel("/product-list-page", {
           window_first: 1,
           window_last: 10,
@@ -526,8 +555,11 @@ export default {
         .then(function (data) {
           console.log("response from category1", data.response);
           // productCount.value = data.response.productListWithCount[0].count;
-          esaleProducts.value = [...data.response.productListWithCount[1].products];
-          // facets.value = [...data.response.facets];
+          esaleProducts.value = [
+            ...data.response.productListWithCount[1].products,
+          ];
+          efacets.value = [...data.response.facets[0].facetList];
+          getFacets();
           console.log("response from category", esaleProducts.value);
           // didYouMean.value = [...data.response.hits[2].corrections];
         })
@@ -576,22 +608,47 @@ export default {
       return variant ? variant.value : "";
     };
     const getTicketId = (productkey) => {
-     let product= esaleProducts.value.find((obj)=>{
-        return obj.key===productkey;
-      })
+      let product = esaleProducts.value.find((obj) => {
+        return obj.key === productkey;
+      });
       return product.key;
     };
 
     const addToCart = (obj) => {
-      // let api = window.esalesAPI({
-      //   market: "UK",
-      //   clusterId: "wFE4AE5CF",
-      // });
       //-- productkey have to get from CT
       // let ticketId=getTicketId(productkey);
-      // api.notify.addToCart(ticketId);
+      //  apiApptus.notify.addToCart(ticketId);
       console.log("obj product123>>>>>>>>", obj);
       addItemToCart(obj);
+    };
+
+    const getFacets = () => {  
+      for (let val of efacets.value) {
+         let facetAtrr={};
+        facetAtrr.id = val.attribute;
+        facetAtrr.label = val.attribute;
+        facetAtrr.count = 10;
+        facetAtrr.options = getFacetOption(val.attribute, val.values);
+        facets.value.push(facetAtrr);
+      }
+       console.log("facets>>>>>>>>", facets);
+
+    };
+   
+
+    const getFacetOption = (attribute, options) => {
+      let facetOption = [];
+      for (let val of options) {
+        facetOption.push({
+          attrName: attribute,
+          count: val.count,
+          id: val.text,
+          selected: undefined,
+          type: "attribute",
+          value: val.text,
+        });
+      }
+      return facetOption;
     };
 
     return {
@@ -616,7 +673,7 @@ export default {
       clearFilters,
       applyFilters,
       getVariant,
-      addToCart
+      addToCart,
     };
   },
   components: {
