@@ -470,7 +470,6 @@ import Vue from "vue";
 import ProductCard from "../components/ProductCard";
 import ProductCardHorizontal from "../components/ProductCardHorizontal";
 import BottomRepBlock from "../components/BottomRepBlock";
-import { apiApptus } from "../helpers/Apptus.helper";
 // TODO(addToCart qty, horizontal): https://github.com/vuestorefront/storefront-ui/issues/1606
 export default {
   transition: "fade",
