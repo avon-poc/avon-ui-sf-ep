@@ -414,6 +414,8 @@ export default {
     const { addItem: addItemToWishlist } = useWishlist()
     const { result, search, loading } = useFacet()
 
+    console.log('cate', result);
+
     const products = computed(() => facetGetters.getProducts(result.value))
     const categoryTree = computed(() =>
       facetGetters.getCategoryTree(result.value),

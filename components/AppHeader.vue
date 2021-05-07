@@ -320,7 +320,7 @@
           </SfSearchBar>
         </template>
       </SfHeader>
-      <div class="top_navigation">
+      <div class="top_navigation_desk">
         <a
           v-for="category in topNavigation"
           :href="'/c/' + category.slug"
@@ -329,12 +329,47 @@
         >
       </div>
       <div class="category_navigation">
-        <a
-          :href="'/c/' + category.slug"
-          v-for="category in categoryList"
-          :key="category.id"
-          >{{ category.name }}</a
-        >
+        <ul>
+          <li v-for="(category, index) in categoryList" :key="category.id">
+            <a :href="'/c/' + category.slug">{{ category.name }}</a>
+            <ul class="subCat" :class="`child-${index}`">
+              <p>
+                <SfIcon
+                  icon="chevron_left"
+                  class="chevron_left"
+                  size="xxs"
+                  color="grey"
+                  viewBox="0 0 24 24"
+                  :coverage="1"
+                />{{ category.name }}
+              </p>
+              <li>
+                <a :href="'/c/' + category.slug">
+                  All {{ category.name }}
+                  <SfIcon
+                    icon="chevron_right"
+                    class="chevron_right"
+                    size="xxs"
+                    color="grey"
+                    viewBox="0 0 24 24"
+                    :coverage="1"
+                /></a>
+              </li>
+              <li v-for="subCat in category.children" :key="subCat.id">
+                <a :href="'/c/' + category.slug + '/' + subCat.slug"
+                  >{{ subCat.name
+                  }}<SfIcon
+                    icon="chevron_right"
+                    class="chevron_right"
+                    size="xxs"
+                    color="grey"
+                    viewBox="0 0 24 24"
+                    :coverage="1"
+                /></a>
+              </li>
+            </ul>
+          </li>
+        </ul>
       </div>
       <SearchResults
         :visible="isSearchOpen"
@@ -413,25 +448,25 @@ export default {
     const { categories: cat1, search: search1 } = useCategory("categories");
     const topNavigation = ref([
       {
-        name: 'Product',
+        name: "Product",
         id: 1,
       },
       {
-        name: 'Quick Shop',
+        name: "Quick Shop",
         id: 2,
       },
       {
-        name: 'Offers',
+        name: "Offers",
         id: 3,
       },
       {
-        name: 'Avonn Loves Blog',
+        name: "Avonn Loves Blog",
         id: 4,
       },
       {
-        name: 'REP HUB',
+        name: "REP HUB",
         id: 5,
-      }
+      },
     ]);
     // const subCategories = computed(() => {
     //   return {
@@ -443,12 +478,13 @@ export default {
     const routeCart = () => {
       return root.$router.push(`/cart`);
     };
+
+    console.log({ cat1 });
     const categoryList = computed(() => {
       return cat1.value.filter((cat) => {
         return cat.parent === null;
       });
     });
-    console.log({cat1});
     const cartTotalItems = computed(() => {
       const count = cartGetters.getTotalItems(cart.value);
       return count ? count.toString() : null;
@@ -606,23 +642,36 @@ export default {
     #e2197c 62%,
     #e5231b 100%
   );
-  a {
-    cursor: pointer;
-    font-size: 15px;
-    font-weight: 100;
-    width: 190px;
-    color: #999;
-    position: relative;
-    padding: 12px;
-    text-transform: uppercase;
-    border-bottom: solid;
-    border-bottom-width: 1px;
-    border-bottom-color: transparent;
-    &:hover {
-      border-bottom-color: #7f28c4;
-      text-decoration: none;
-      color: #7f28c4;
+  ul {
+    margin: 0;
+    padding: 0;
+    li {
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 100;
+      color: #999;
+      position: relative;
+      width: 200px;
+      padding: 12px;
+      text-transform: uppercase;
+      border-bottom: solid;
+      border-bottom-width: 1px;
+      border-bottom-color: transparent;
+      text-align: center;
+      list-style: none;
+      display: inline-block;
+      transition: 0.3s ease;
+      &:hover + .subCat{
+          display: block;
+        }
+      }
     }
+  
+  .subCat {
+    display: none;
+    position: absolute;
+    background: #fff;
+    z-index: 9;
   }
 }
 /*Mobile Css */
@@ -744,6 +793,35 @@ export default {
         }
       }
     }
+  }
+}
+
+/* DESKTOP CSS*/
+.sf-header__search {
+    display: block;
+    width: 93%;
+    background: #fff;
+    border-radius: 25px;
+    padding: 0px 17px;
+    margin-top: 6px;
+    border: 1px solid #ccc7c7;
+    .sf-search-bar__button{
+      top:5px;
+    }
+  }
+.top_navigation_desk {
+  font-family: var(--font-family);
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: center;
+  margin-top: 30px;
+  a {
+    padding: 10px 20px;
+    font-size: 13px;
+    text-transform: uppercase;
+    color: #afafaf;
+    font-weight: 100;
   }
 }
 .top_navigation {
