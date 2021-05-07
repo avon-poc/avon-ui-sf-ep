@@ -62,6 +62,11 @@ export default {
         path: '/special-offers/:id',
         component: resolve(__dirname, 'pages/OfferDetails.vue')
       });
+      routes.push({
+        name: 'cart',
+        path: '/cart',
+        component: resolve(__dirname, 'pages/Cart.vue')
+      });
    }
   },
   buildModules: [
