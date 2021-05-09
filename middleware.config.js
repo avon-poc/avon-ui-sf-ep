@@ -29,6 +29,13 @@ module.exports = {
         currency: 'GBP',
         country: 'GB',
       },
+      customQueries: {
+        'get-parent-category': ({ query, variables }) => {
+          const nQ = require('./queries/customGQLQuerries.js');
+          console.log(nQ.myDateTime());
+          return { query: nQ.getParentQuery(), variables }
+        }
+      }
     },
     ctf: {
       location: '@vsf-enterprise/ct-faceting/server',

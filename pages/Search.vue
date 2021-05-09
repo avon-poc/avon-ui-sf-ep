@@ -20,7 +20,7 @@
             :key="product.key"
           >
             <div class="product-card__image">
-              <img :src="product.attributes.image_url[0]" />
+              <img :src="product.attributes.image_url && product.attributes.image_url[0]" />
             </div>
             <div class="product-card__detail">
               <h2 class="product-card__title">
@@ -192,8 +192,8 @@
                 :key="product.key"
                 :style="{ '--index': i }"
                 :title="product.attributes.title[0]"
-                :image="product.attributes.image_url[0]"
-                :regular-price="$n(product.attributes.price[0], 'currency')"
+                :image="product.attributes.image_url && product.attributes.image_url[0]"
+                :regular-price="$n(product.attributes.price && product.attributes.price[0], 'currency')"
                 :max-rating="5"
                 :score-rating="4"
                 :show-add-to-cart-button="true"
@@ -215,8 +215,8 @@
                 :key="product.key"
                 :style="{ '--index': i }"
                 :title="product.attributes.title[0]"
-                :image="product.attributes.image_url[0]"
-                :regular-price="$n(product.attributes.price[0], 'currency')"
+                :image="product.attributes.image_url && product.attributes.image_url[0]"
+                :regular-price="$n(product.attributes.price && product.attributes.price[0], 'currency')"
                 :max-rating="5"
                 :score-rating="2"
                 :show-add-to-cart-button="true"
@@ -388,7 +388,7 @@ export default {
   name: "Search",
   transition: "fade",
   setup(props, context) {
-    console.log({ context });
+    // console.log({ context });
     const products = ref();
     const didYouMean = ref();
     const facets = ref([]);
@@ -401,7 +401,7 @@ export default {
     const query = getSearchTermFromUrl();
     query.sort = query.sort === "latest" ? "relevance" : query.sort;
 
-    console.log("searchTerm", getSearchTermFromUrl());
+    // console.log("searchTerm", getSearchTermFromUrl());
 
     const { addItem: addItemToCart, isInCart } = useCart();
     const loading = false; // NEED TO MAKE DYANAMIC
@@ -475,7 +475,7 @@ export default {
     const qty = ref(1);
     const addItemToCart1 = async (productdet, qty) => {
       await search({ id: "c0fad67f-d10c-494c-9b8f-ed7e1604ca05" }); //productdet.obj.id
-      console.log("product addItemToCart1>>>>>>>>>>>>", product.value);
+      // console.log("product addItemToCart1>>>>>>>>>>>>", product.value);
       addItemToCart({ product: product.value, quantity: parseInt(qty) });
     };
 
@@ -491,7 +491,7 @@ export default {
       let filterObj = {
         window_first: 1,
         window_last: 10,
-        search_phrase: query.term,
+        search_phrase: 'lipstick',
         max_facets: 10,
         sort_by: sortByQuery,
       };
@@ -508,13 +508,14 @@ export default {
         facet.add("discount_band", facetsByQuery).add("brand", "anew");
         filterObj = { ...filterObj, facets: facet.toString() };
 
-        console.log("facet2apptus", facet.toString());
+        // console.log("facet2apptus", facet.toString());
       }
 
       // Querying Apptus Api
       apiApptus
         .panel("/search-page/search-result-zone", filterObj)
         .then(function (data) {
+          console.log({data});
           productCount.value = data.response.productCount[0].count;
           products.value = [...data.response.hits[0].products];
           facets.value = [...data.response.hits[1].facetList];
@@ -528,7 +529,6 @@ export default {
       if (!(query.filters && Object.keys(query.filters).length === 0)) {
         selectedFacet.value = { ...query.filters };
         for (const property in query.filters) {
-          console.log(`${property}: ${query.filters[property]}`);
           let filters = `${query.filters[property]}`;
           handleFilter.value = [...handleFilter.value, ...filters.split(",")];
         }

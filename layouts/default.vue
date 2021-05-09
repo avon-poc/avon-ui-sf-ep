@@ -54,6 +54,7 @@ export default {
 @import "~@storefront-ui/vue/styles";
 
 #layout {
+  display:block;
   box-sizing: border-box;
   @include for-desktop {
     max-width: 976px;
@@ -118,13 +119,16 @@ h4 {
   --c-primary: #7f28c4;
   --c-avon-secondary: red;
   --search-bar-button-right: 10px;
-  --font-family: Roboto, Arial;
+  --font-family: 'Montserrat';
   --c-background-one: #fff;
   --c-background-two: rgb(241, 241, 241);
   --c-color-one: rgb(49, 49, 49);
   --c-color-two: #000;
   --image-width: 100% !important;
   --image-height: 664px !important;
+  --text-primary: #546264;
+  --text-secondary: #999;
+  --text-highlight: #591c8a;
 }
 .product__drag-icon {
   display: none;
