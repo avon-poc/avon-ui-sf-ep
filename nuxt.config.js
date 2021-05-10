@@ -51,7 +51,23 @@ export default {
       } else {
         return { x: 0, y: 0 };
       }
-    }
+    },extendRoutes (routes, resolve) {
+      routes.push({
+        name: 'specialOffers',
+        path: '/special-offers',
+        component: resolve(__dirname, 'pages/Offer.vue')
+      });
+      routes.push({
+        name: 'specialOffersDetail',
+        path: '/special-offers/:id',
+        component: resolve(__dirname, 'pages/OfferDetails.vue')
+      });
+      routes.push({
+        name: 'cart',
+        path: '/cart',
+        component: resolve(__dirname, 'pages/Cart.vue')
+      });
+   }
   },
   buildModules: [
     '@nuxt/typescript-build',

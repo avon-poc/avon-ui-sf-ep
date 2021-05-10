@@ -86,30 +86,8 @@
             {{ $t("Filters") }}
           </SfButton>
         </LazyHydrate> -->
-
-        <!-- <LazyHydrate on-interaction>
-          <SfButton
-            class="sf-button--text navbar__filters-button"
-            data-cy="category-btn_filters"
-            aria-label="Filters"
-            @click="toggleFilterSidebar"
-          >
-            <SfIcon
-              size="24px"
-              color="dark-secondary"
-              icon="filter2"
-              class="navbar__filters-icon"
-              data-cy="category-icon_"
-            />
-            {{ $t("Filters") }}
-          </SfButton>
-        </LazyHydrate> -->
         <LazyHydrate never class="desktop-only">
-          <SfHeading
-            :level="3"
-            :title="breadcrumbs ? breadcrumbs[breadcrumbs.length - 1].text : ''"
-            class="navbar__title"
-          />
+          <SfHeading :level="3" :title="''" class="navbar__title" />
         </LazyHydrate>
 
         <div class="navbar__sort sortBy desktop-only">
@@ -178,22 +156,32 @@
             :class="{ 'loading--categories': loading }"
             :loading="loading"
           >
-            <SfAccordion :open="activeCategory" :show-chevron="false">
+            <SfAccordion :open="activeCategory" :show-chevron="true">
               <SfAccordionItem
                 v-for="(cat, i) in categoryTree && categoryTree.items"
                 :key="i"
-                :header="cat.label" 
+                :header="cat.label"
               >
-                <template v-slot:header v-if="cat.items.length === 0">
-                  <SfButton
-                      class="sf-button--pure sf-accordion-item__header hideNextDiv"
-                    :link="localePath(th.getCatLink(cat))"
-                    >
-                    {{ cat.label }}
-                    </SfButton>              
-                </template>       
-                <template>                 
-                  <SfList class="list" v-if="cat.items.length > 0">
+                <template>
+                  <SfList class="list">
+                    <SfListItem class="list__item">
+                      <SfMenuItem
+                        :count="cat.count || ''"
+                        :data-cy="`category-link_subcategory_${cat.slug}`"
+                        :label="cat.label"
+                      >
+                        <template #label>
+                          <nuxt-link
+                            :to="localePath(th.getCatLink(cat))"
+                            :class="
+                              cat.isCurrent ? 'sidebar--cat-selected' : ''
+                            "
+                          >
+                            All
+                          </nuxt-link>
+                        </template>
+                      </SfMenuItem>
+                    </SfListItem>
                     <SfListItem
                       class="list__item"
                       v-for="(subCat, j) in cat.items"
@@ -237,10 +225,10 @@
               v-for="(product, i) in products"
               :key="productGetters.getSlug(product)"
               :style="{ '--index': i }"
-              :title="productGetters.getName(product)"
-              :image="productGetters.getCoverImage(product)"
+              :title="product.attributes.title[0]"
+              :image="product.attributes.image_url[0]"
               :regular-price="
-                $n(productGetters.getPrice(product).regular, 'currency')
+                $n(product.attributes.price[0], 'currency')
               "
               :special-price="
                 productGetters.getPrice(product).special &&
@@ -251,7 +239,7 @@
               :show-add-to-cart-button="true"
               :isOnWishlist="false"
               :isAddedToCart="isInCart({ product })"
-              :variant="getVariant(product)"
+              :variant="''"
               :link="
                 localePath(
                   `/p/${productGetters.getId(product)}/${productGetters.getSlug(
@@ -289,10 +277,10 @@
               :max-rating="5"
               :score-rating="3"
               :is-on-wishlist="false"
-              :variant="getVariant(product)"
+              :variant="''"
               class="products__product-card-horizontal"
               @click:wishlist="addItemToWishlist({ product })"
-              @click:add-to-cart="addToCart({ product, quantity: 1 })"
+              @click:add-to-cart="addItemToCart({ product, quantity: 1 })"
               :link="
                 localePath(
                   `/p/${productGetters.getId(product)}/${productGetters.getSlug(
@@ -462,7 +450,12 @@ import {
   SfProperty,
   SfImage,
 } from "@storefront-ui/vue";
-import { ref, computed, onMounted } from "@vue/composition-api";
+import {
+  ref,
+  computed,
+  onMounted,
+  getCurrentInstance,
+} from "@vue/composition-api";
 import {
   useCart,
   useWishlist,
@@ -481,33 +474,28 @@ import BottomRepBlock from "../components/BottomRepBlock";
 export default {
   transition: "fade",
   setup(props, context) {
+    const products = ref();
+    const productCount = ref(2);
+    const facets = ref([]);
     const th = useUiHelpers();
     const uiState = useUiState();
-    // const getApptusAPI = context.root.$apptusAPI;
-    // var apiApptus = getApptusAPI();
     const { addItem: addItemToCart, isInCart } = useCart();
     const { addItem: addItemToWishlist } = useWishlist();
     const { result, search, loading } = useFacet();
-    const products = computed(() => facetGetters.getProducts(result.value));
-    const esaleProducts = ref();
-    const efacets = ref();
-    const facets = ref([]);
+    const getInstance = () => {
+      const vm = getCurrentInstance();
+      return vm.$root;
+    };
+    const instance = getInstance();
+    const { query } = instance.$router.history.current;
+    // const products = computed(() => facetGetters.getProducts(result.value));
     const categoryTree = computed(() =>
       facetGetters.getCategoryTree(result.value)
-    );
-    console.log(
-      "categoryTree>>>>>>>>",
-      categoryTree,
-      result.value,
-      products.value
     );
     const breadcrumbs = computed(() =>
       facetGetters.getBreadcrumbs(result.value)
     );
     const sortBy = computed(() => facetGetters.getSortOptions(result.value));
-    // const facets = computed(() =>
-    //   facetGetters.getGrouped(result.value, ["color", "size"])
-    // );
     const pagination = computed(() => facetGetters.getPagination(result.value));
     const activeCategory = computed(() => {
       const items = categoryTree.value.items;
@@ -529,6 +517,8 @@ export default {
     const { changeFilters, isFacetColor } = useUiHelpers();
     const { toggleFilterSidebar } = useUiState();
     const selectedFilters = ref({});
+    let sortByQuery =
+      typeof query.sort !== "undefined" ? query.sort : "relevance";
     onMounted(() => {
       var apiApptus = window.esalesAPI({
         market: "UK",
@@ -544,27 +534,15 @@ export default {
         })
         .then(function (data) {
           console.log("response from category1", data.response);
-          // productCount.value = data.response.productListWithCount[0].count;
-          esaleProducts.value = [
-            ...data.response.productListWithCount[1].products,
-          ];
-          efacets.value = [...data.response.facets[0].facetList];
-          getFacets();
-          console.log("response from category", esaleProducts.value);
+          productCount.value = data.response.productListWithCount[0].count;
+          products.value = [...data.response.productListWithCount[1].products];
+          facets.value = [...data.response.facets];
+          console.log("response from category", products.value);
           // didYouMean.value = [...data.response.hits[2].corrections];
         })
         .catch(function (data) {
           console.log("Error: ", data);
         });
-      context.root.$scrollTo(context.root.$el, 2000);
-      if (!facets.value.length) return;
-      selectedFilters.value = facets.value.reduce(
-        (prev, curr) => ({
-          ...prev,
-          [curr.id]: curr.options.filter((o) => o.selected).map((o) => o.id),
-        }),
-        {}
-      );
     });
     const isFilterSelected = (facet, option) =>
       (selectedFilters.value[facet.id] || []).includes(option.id);
@@ -597,48 +575,15 @@ export default {
       // console.log("product>>>>>>>>", product, variant ? variant.value : "");
       return variant ? variant.value : "";
     };
-    const getTicketId = (productkey) => {
-      let product = esaleProducts.value.find((obj) => {
-        return obj.key === productkey;
-      });
-      return product.key;
-    };
 
     const addToCart = (obj) => {
-      //-- productkey have to get from CT
-      // let ticketId=getTicketId(productkey);
-      //  apiApptus.notify.addToCart(ticketId);
+      var api = window.esalesAPI({
+        market: "UK",
+        clusterId: "wFE4AE5CF",
+      });
+      api.notify.addToCart(obj.product.ticket);
       console.log("obj product123>>>>>>>>", obj);
       addItemToCart(obj);
-    };
-
-    const getFacets = () => {  
-      for (let val of efacets.value) {
-         let facetAtrr={};
-        facetAtrr.id = val.attribute;
-        facetAtrr.label = val.attribute;
-        facetAtrr.count = 10;
-        facetAtrr.options = getFacetOption(val.attribute, val.values);
-        facets.value.push(facetAtrr);
-      }
-       console.log("facets>>>>>>>>", facets);
-
-    };
-   
-
-    const getFacetOption = (attribute, options) => {
-      let facetOption = [];
-      for (let val of options) {
-        facetOption.push({
-          attrName: attribute,
-          count: val.count,
-          id: val.text,
-          selected: undefined,
-          type: "attribute",
-          value: val.text,
-        });
-      }
-      return facetOption;
     };
 
     return {
