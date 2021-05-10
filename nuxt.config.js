@@ -87,7 +87,23 @@ export default {
       }
     }],
     ['@vsf-enterprise/ct-faceting/nuxt', {
-      apiConfigModule: '@vsf-enterprise/commercetools/nuxt'
+      apiConfigModule: '@vsf-enterprise/commercetools/nuxt',
+      pageOptions: [20, 50, 100],
+      subcategoriesLimit: 100,
+      availableFacets: [
+        { facet: 'categories.id', type: 'string', option: 'subtree("*")', name: 'category', filteringStrategy: 'query' },  // Don't change the "name" of this facet
+        { facet: 'variants.attributes.size', type: 'string', option: '', name: 'size' },
+        { facet: 'variants.attributes.color.key', type: 'string', option: '', name: 'color' }
+      ],
+      sortingOptions: [
+        { id: 'latest', name: 'Latest', facet: 'createdAt', direction: 'desc' },
+        { id: 'price-up', name: 'Price from low to high', facet: 'price', direction: 'asc' },
+        { id: 'price-down', name: 'Price from high to low', facet: 'price', direction: 'desc' },
+        { id: 'alphabet-up', name: 'Alphabetical(A-Z)', facet: 'name.en', direction: 'asc' },
+        { id: 'name-up', name: 'Alphabetical(A-Z)(name)', facet: 'name.en', direction: 'asc' },
+        { id: 'relevance', name: 'Relevance', facet: 'score', direction: 'desc' },
+      ],
+      filteringStrategy: 'filter'
     }],
     ['@vsf-enterprise/commercetools/nuxt', {
       i18n: {

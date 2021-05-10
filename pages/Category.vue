@@ -112,7 +112,7 @@
           />
         </LazyHydrate>
 
-        <div class="navbar__sort sortBy desktop-only">
+        <div class="navbar__sort sortBy">
           <span class="navbar__label">{{ $t("Sort by") }}:</span>
           <LazyHydrate on-interaction>
             <SfSelect
