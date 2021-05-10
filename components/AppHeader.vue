@@ -995,6 +995,7 @@ export default {
       text-align: center;
       list-style: none;
       display: inline-block;
+      font-family: var(--font-family);
       transition: 0.3s ease;
       &:hover {
         border-bottom-color: var(--c-primary);
