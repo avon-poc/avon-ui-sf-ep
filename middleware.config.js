@@ -1,3 +1,5 @@
+
+const nQ = require('./queries/customGQLQuerries.js');
 module.exports = {
   integrations: {
     ct: {
@@ -29,6 +31,13 @@ module.exports = {
         currency: 'GBP',
         country: 'GB',
       },
+      customQueries: {
+        'get-parent-category': ({ query, variables }) => {
+          const catQuery = nQ.getParentQuery();
+          console.log(nQ.myDateTime());
+          return { query: catQuery, variables }
+        }
+      }
     },
     ctf: {
       location: '@vsf-enterprise/ct-faceting/server',
