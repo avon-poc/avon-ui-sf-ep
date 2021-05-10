@@ -880,6 +880,7 @@ export default {
   font-size: 13px;
   font-weight: 100;
   color: var(--c-primary);
+  font-family: var(--font-family);
   #Svg_bag {
     width: 31px;
     margin-right: 10px;
@@ -894,6 +895,7 @@ export default {
   font-size: 11px;
   font-weight: 100;
   color: var(--text-secondary);
+  font-family: var(--font-family);
   right: 0;
   text-transform: uppercase;
   .sf-icon {
