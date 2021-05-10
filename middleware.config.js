@@ -1,3 +1,5 @@
+
+const nQ = require('./queries/customGQLQuerries.js');
 module.exports = {
   integrations: {
     ct: {
@@ -31,9 +33,9 @@ module.exports = {
       },
       customQueries: {
         'get-parent-category': ({ query, variables }) => {
-          const nQ = require('./queries/customGQLQuerries.js');
+          const catQuery = nQ.getParentQuery();
           console.log(nQ.myDateTime());
-          return { query: nQ.getParentQuery(), variables }
+          return { query: catQuery, variables }
         }
       }
     },

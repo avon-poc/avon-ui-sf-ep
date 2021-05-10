@@ -73,6 +73,21 @@
                   </li>
                 </ul>
               </div>
+              <div class="top_navigation_desk">
+                <a
+                  v-for="category in topNavigation"
+                  :href="'/c/' + category.slug"
+                  :key="category.id"
+                  >{{ category.name }}
+                  <SfIcon
+                    icon="chevron_right"
+                    class="chevron_right"
+                    size="xxs"
+                    color="grey"
+                    viewBox="0 0 24 24"
+                    :coverage="1"
+                /></a>
+              </div>
               <!-- <div class="category_navigation">
                 <a
                   :href="'/c/' + category.slug"
@@ -391,7 +406,7 @@
       <div class="top_navigation_desk">
         <a
           v-for="category in topNavigation"
-          :href="'/c/' + category.slug"
+          :href="'/' + category.slug"
           :key="category.id"
           >{{ category.name }}</a
         >
@@ -439,7 +454,13 @@ import {
   useFacet,
   useCategory,
 } from "@vue-storefront/commercetools";
-import { computed, ref, onBeforeUnmount, watch, onMounted } from "@vue/composition-api";
+import {
+  computed,
+  ref,
+  onBeforeUnmount,
+  watch,
+  onMounted,
+} from "@vue/composition-api";
 import { onSSR } from "@vue-storefront/core";
 import { useUiHelpers } from "~/composables";
 import LocaleSelector from "./LocaleSelector";
@@ -463,8 +484,10 @@ export default {
     SfHeader,
   },
   directives: { clickOutside },
-  setup(props, { root },) {
-    process.abcd = root.$cookies.get('vsf-locale');
+  setup(props, { root }) {
+    process.avon = {
+      channelId: 'asdfasdf',
+    };
     const {
       toggleCartSidebar,
       toggleWishlistSidebar,
@@ -491,22 +514,27 @@ export default {
       {
         name: "Product",
         id: 1,
+        slug: '',
       },
       {
         name: "Quick Shop",
         id: 2,
+        slug: '',
       },
       {
         name: "Offers",
         id: 3,
+        slug: 'offers',
       },
       {
         name: "Avonn Loves Blog",
         id: 4,
+        slug: '',
       },
       {
         name: "REP HUB",
         id: 5,
+        slug: '',
       },
     ]);
     // const subCategories = computed(() => {
@@ -559,8 +587,7 @@ export default {
       await loadWishlist();
       await search1({ customQuery: { categories: "get-parent-category" } });
     });
-    onMounted(async () => {
-    });
+    onMounted(async () => {});
     const closeSearch = () => {
       if (!isSearchOpen.value) return;
       term.value = "";
@@ -886,26 +913,52 @@ export default {
   }
 }
 .top_navigation_desk {
-  font-family: var(--font-family);
-  display: flex;
-  align-items: center;
-  width: 100%;
-  justify-content: center;
-  margin-top: 20px;
-  a {
-    padding: 10px 20px;
-    font-size: 12px;
-    text-transform: uppercase;
-    color: var(--text-secondary);
-    font-weight: 100;
-    border-bottom: 1px solid #fff;
-    &:nth-child(3) {
-      color: var(--text-highlight);
-      font-weight: bold;
+  @include for-desktop {
+    font-family: var(--font-family);
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: center;
+    margin-top: 20px;
+    a {
+      padding: 10px 20px;
+      font-size: 12px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      font-weight: 100;
+      border-bottom: 1px solid #fff;
+      &:nth-child(3) {
+        color: var(--text-highlight);
+        font-weight: bold;
+      }
+      &:hover {
+        color: var(--c-primary);
+        border-bottom: 1px solid var(--c-primary);
+      }
     }
-    &:hover {
-      color: var(--c-primary);
-      border-bottom: 1px solid var(--c-primary);
+  }
+  @include for-mobile {
+    display: flex;
+    flex-direction: column;
+    a {
+      cursor: pointer;
+      font-size: 20px;
+      font-weight: 500;
+      color: rgb(0, 0, 0);
+      padding: 12px 20px;
+      text-transform: uppercase;
+      border-bottom: solid;
+      border-bottom-width: 1px;
+      border-bottom-color: transparent;
+      list-style: none;
+      border-bottom: 1px solid #928f8f;
+      line-height: 30px;
+      font-family: var(--font-family);
+      & > .sf-icon {
+        display: inline-block;
+        position: absolute;
+        right: 20px;
+      }
     }
   }
 }
