@@ -47,62 +47,26 @@
                       </p>
                       <li>
                         <a :href="'/c/' + category.slug">
-                          All {{ category.name }}
-                          <SfIcon
-                            icon="chevron_right"
-                            class="chevron_right"
-                            size="xxs"
-                            color="grey"
-                            viewBox="0 0 24 24"
-                            :coverage="1"
-                        /></a>
+                          All {{ category.name }}</a
+                        >
                       </li>
                       <li v-for="subCat in category.children" :key="subCat.id">
-                        <a :href="'/c/' + category.slug + '/' + subCat.slug"
-                          >{{ subCat.name
-                          }}<SfIcon
-                            icon="chevron_right"
-                            class="chevron_right"
-                            size="xxs"
-                            color="grey"
-                            viewBox="0 0 24 24"
-                            :coverage="1"
-                        /></a>
+                        <a :href="'/c/' + category.slug + '/' + subCat.slug">{{
+                          subCat.name
+                        }}</a>
                       </li>
                     </ul>
                   </li>
                 </ul>
               </div>
-              <div class="top_navigation_desk">
+              <div class="top_navigation_desk" v-if="!subMenuToggle">
                 <a
                   v-for="category in topNavigation"
                   :href="'/c/' + category.slug"
                   :key="category.id"
                   >{{ category.name }}
-                  <SfIcon
-                    icon="chevron_right"
-                    class="chevron_right"
-                    size="xxs"
-                    color="grey"
-                    viewBox="0 0 24 24"
-                    :coverage="1"
-                /></a>
+                </a>
               </div>
-              <!-- <div class="category_navigation">
-                <a
-                  :href="'/c/' + category.slug"
-                  v-for="category in subCategories"
-                  :key="category.id"
-                  >{{ category.name
-                  }}<SfIcon
-                    class="chevron_right"
-                    icon="chevron_right"
-                    size="xxs"
-                    color="grey"
-                    viewBox="0 0 24 24"
-                    :coverage="1"
-                /></a>
-              </div> -->
             </aside>
           </div>
         </nav>
@@ -486,7 +450,7 @@ export default {
   directives: { clickOutside },
   setup(props, { root }) {
     process.avon = {
-      channelId: 'asdfasdf',
+      channelId: "asdfasdf",
     };
     const {
       toggleCartSidebar,
@@ -514,27 +478,27 @@ export default {
       {
         name: "Product",
         id: 1,
-        slug: '',
+        slug: "",
       },
       {
         name: "Quick Shop",
         id: 2,
-        slug: '',
+        slug: "",
       },
       {
         name: "Offers",
         id: 3,
-        slug: 'offers',
+        slug: "offers",
       },
       {
         name: "Avonn Loves Blog",
         id: 4,
-        slug: '',
+        slug: "",
       },
       {
         name: "REP HUB",
         id: 5,
-        slug: '',
+        slug: "",
       },
     ]);
     // const subCategories = computed(() => {
@@ -630,6 +594,7 @@ export default {
       unMapMobileObserver();
     });
     return {
+      subMenuToggle,
       topNavigation,
       toggleMenu,
       toggleSubMenu,
@@ -790,7 +755,8 @@ export default {
     justify-content: flex-start;
     flex-direction: column;
     width: 80%;
-    height: 100%;
+    padding-bottom: 50px;
+    min-height: 100%;
     position: absolute;
     z-index: 999;
     left: -1000px;
@@ -841,6 +807,7 @@ export default {
       background: #fff;
       z-index: 999;
       width: 100%;
+      min-height: 100%;
       right: 1000px;
       top: 0;
       p {
@@ -982,13 +949,15 @@ export default {
     margin: 0;
     padding: 0;
     width: 100%;
+    display: flex;
+    justify-content: center;
     li {
       cursor: pointer;
       font-size: 15px;
       font-weight: 100;
       color: var(--text-secondary);
       position: relative;
-      width: 14.2%;
+      flex: 1;
       padding: 12px;
       text-transform: uppercase;
       border-bottom: solid;
@@ -996,7 +965,6 @@ export default {
       border-bottom-color: transparent;
       text-align: center;
       list-style: none;
-      display: inline-block;
       font-family: var(--font-family);
       transition: 0.3s ease;
       &:hover {
