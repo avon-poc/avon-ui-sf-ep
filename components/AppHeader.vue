@@ -377,7 +377,8 @@
       </div>
       <div class="category_navigation">
         <ul>
-          <li v-for="(category, index) in categoryList" :key="category.id">
+          <template v-for="(category, index) in categoryList">
+          <li :key="category.id" v-if="category.show">
             <a :href="'/c/' + category.slug">{{ category.name }}</a>
             <ul class="subCat" :class="`child-${index}`">
               <li v-for="subCat in category.children" :key="subCat.id">
@@ -385,6 +386,19 @@
                   subCat.name
                 }}</a>
               </li>
+            </ul>
+          </li>
+          </template>
+          <li>
+            <a href="">More</a>
+            <ul class="subCat">
+              <template v-for="(subCat) in categoryList">
+              <li :key="subCat.id" v-if="!subCat.show">
+                <a :href="'/c/' + subCat.slug">{{
+                  subCat.name
+                }}</a>
+              </li>
+              </template>
             </ul>
           </li>
         </ul>
@@ -473,7 +487,6 @@ export default {
     const isSearchOpen = ref(false);
     const searchBarRef = ref(null);
     const { categories: cat1, search: search1 } = useCategory("categories");
-    console.log({ cat1 });
     const topNavigation = ref([
       {
         name: "Product",
@@ -513,9 +526,12 @@ export default {
     };
 
     const categoryList = computed(() => {
-      return cat1.value.filter((cat) => {
-        return cat.parent === null;
-      });
+      let count = 0;
+      return cat1.value.map((c)=>{
+        let obj = {...c};
+        obj.show = (count++ < 5) ? true : false;
+        return obj;
+      })
     });
     const cartTotalItems = computed(() => {
       const count = cartGetters.getTotalItems(cart.value);
